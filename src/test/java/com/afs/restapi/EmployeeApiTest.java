@@ -28,25 +28,27 @@ class EmployeeApiTest {
     @Autowired
     private InMemoryEmployeeRepository inMemoryEmployeeRepository;
 
+    @Autowired
+    private EmployeeJpaRepository employeeJpaRepository;
+
     @BeforeEach
     void setUp() {
-        inMemoryEmployeeRepository.clearAll();
+        employeeJpaRepository.deleteAll();
     }
 
     @Test
     void should_update_employee_age_and_salary() throws Exception {
-        Employee previousEmployee = new Employee(1L, "zhangsan", 22, "Male", 1000);
-        inMemoryEmployeeRepository.insert(previousEmployee);
+        Employee previousEmployee = employeeJpaRepository.save(new Employee(null, "zhangsan", 22, "Male", 1000));
 
-        Employee employeeUpdateRequest = new Employee(1L, "lisi", 24, "Female", 2000);
+        Employee employeeUpdateRequest = new Employee(previousEmployee.getId(), "lisi", 24, "Female", 2000);
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedEmployeeJson = objectMapper.writeValueAsString(employeeUpdateRequest);
-        mockMvc.perform(put("/employees/{id}", 1)
+        mockMvc.perform(put("/employees/{id}", previousEmployee.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedEmployeeJson))
                 .andExpect(MockMvcResultMatchers.status().is(204));
 
-        Optional<Employee> optionalEmployee = inMemoryEmployeeRepository.findById(1L);
+        Optional<Employee> optionalEmployee = employeeJpaRepository.findById(previousEmployee.getId());
         assertTrue(optionalEmployee.isPresent());
         Employee updatedEmployee = optionalEmployee.get();
         Assertions.assertEquals(employeeUpdateRequest.getAge(), updatedEmployee.getAge());
