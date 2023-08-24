@@ -147,18 +147,25 @@ class CompanyApiTest {
     @Test
     void should_find_employees_by_companies() throws Exception {
         Company company = getCompany1();
-        inMemoryCompanyRepository.insert(company);
+        companyJpaRepository.save(company);
         Employee employee = getEmployee(company);
-        inMemoryEmployeeRepository.insert(employee);
+        employeeJpaRepository.save(employee);
+        Employee employee1 = getEmployee1(company);
+        employeeJpaRepository.save(employee1);
 
-        mockMvc.perform(get("/companies/{companyId}/employees", 1L))
+        mockMvc.perform(get("/companies/{companyId}/employees", company.getId()))
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(employee.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(employee.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(employee.getAge()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value(employee.getGender()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].salary").value(employee.getSalary()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].salary").value(employee.getSalary()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(employee1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value(employee1.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].age").value(employee1.getAge()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].gender").value(employee1.getGender()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].salary").value(employee1.getSalary()));
     }
 
     private static Employee getEmployee(Company company) {
@@ -166,6 +173,16 @@ class CompanyApiTest {
         employee.setName("Bob");
         employee.setAge(22);
         employee.setGender("Male");
+        employee.setSalary(10000);
+        employee.setCompanyId(company.getId());
+        return employee;
+    }
+
+    private static Employee getEmployee1(Company company) {
+        Employee employee = new Employee();
+        employee.setName("Jane");
+        employee.setAge(22);
+        employee.setGender("Female");
         employee.setSalary(10000);
         employee.setCompanyId(company.getId());
         return employee;
