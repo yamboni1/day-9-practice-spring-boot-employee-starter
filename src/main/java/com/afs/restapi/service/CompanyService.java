@@ -43,26 +43,24 @@ public class CompanyService {
     }
 
     public Company findById(Long id) {
-        Company company = getCompanyRepository().findById(id).orElseThrow(CompanyNotFoundException::new);
-        List<Employee> employees = getEmployeeRepository().findByCompanyId(company.getId());
-        company.setEmployees(employees);
-        return company;
+        return companyJpaRepository.findById(id).orElseThrow(CompanyNotFoundException::new);
     }
 
     public void update(Long id, Company company) {
         Company toBeUpdatedCompany = findById(id);
         toBeUpdatedCompany.setName(company.getName());
+        companyJpaRepository.save(toBeUpdatedCompany);
     }
 
     public Company create(Company company) {
-        return getCompanyRepository().insert(company);
+        return companyJpaRepository.save(company);
     }
 
     public List<Employee> findEmployeesByCompanyId(Long id) {
-        return getEmployeeRepository().findByCompanyId(id);
+        return employeeJpaRepository.findByCompanyId(id);
     }
 
     public void delete(Long id) {
-        inMemoryCompanyRepository.deleteById(id);
+        companyJpaRepository.deleteById(id);
     }
 }
