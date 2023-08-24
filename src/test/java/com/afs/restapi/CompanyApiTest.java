@@ -2,8 +2,8 @@ package com.afs.restapi;
 
 import com.afs.restapi.entity.Company;
 import com.afs.restapi.entity.Employee;
-import com.afs.restapi.repository.CompanyJpaRepository;
-import com.afs.restapi.repository.EmployeeJpaRepository;
+import com.afs.restapi.repository.CompanyRepository;
+import com.afs.restapi.repository.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,20 +28,20 @@ class CompanyApiTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private EmployeeJpaRepository employeeJpaRepository;
+    private EmployeeRepository employeeRepository;
     @Autowired
-    private CompanyJpaRepository companyJpaRepository;
+    private CompanyRepository companyRepository;
 
 
     @BeforeEach
     void setUp() {
-        companyJpaRepository.deleteAll();
-        employeeJpaRepository.deleteAll();
+        companyRepository.deleteAll();
+        employeeRepository.deleteAll();
     }
 
     @Test
     void should_update_company_name() throws Exception {
-        Company previousCompany = companyJpaRepository.save(new Company(null, "abc"));
+        Company previousCompany = companyRepository.save(new Company(null, "abc"));
 
 
         Company companyUpdateRequest = new Company(null, "xyz");
@@ -52,7 +52,7 @@ class CompanyApiTest {
                         .content(updatedEmployeeJson))
                 .andExpect(MockMvcResultMatchers.status().is(204));
 
-        Optional<Company> optionalCompany = companyJpaRepository.findById(previousCompany.getId());
+        Optional<Company> optionalCompany = companyRepository.findById(previousCompany.getId());
         assertTrue(optionalCompany.isPresent());
         Company updatedCompany = optionalCompany.get();
         Assertions.assertEquals(previousCompany.getId(), updatedCompany.getId());
@@ -61,12 +61,12 @@ class CompanyApiTest {
 
     @Test
     void should_delete_company_name() throws Exception {
-        Company company = companyJpaRepository.save(new Company(1L, "abc"));
+        Company company = companyRepository.save(new Company(1L, "abc"));
 
         mockMvc.perform(delete("/companies/{id}", company.getId()))
                 .andExpect(MockMvcResultMatchers.status().is(204));
 
-        assertTrue(companyJpaRepository.findById(company.getId()).isEmpty());
+        assertTrue(companyRepository.findById(company.getId()).isEmpty());
     }
 
     @Test
@@ -86,7 +86,7 @@ class CompanyApiTest {
     @Test
     void should_find_companies() throws Exception {
         Company company = getCompany1();
-        companyJpaRepository.save(company);
+        companyRepository.save(company);
 
         mockMvc.perform(get("/companies"))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -100,9 +100,9 @@ class CompanyApiTest {
         Company company1 = getCompany1();
         Company company2 = getCompany2();
         Company company3 = getCompany3();
-        companyJpaRepository.save(company1);
-        companyJpaRepository.save(company2);
-        companyJpaRepository.save(company3);
+        companyRepository.save(company1);
+        companyRepository.save(company2);
+        companyRepository.save(company3);
 
         mockMvc.perform(get("/companies")
                         .param("pageNumber", "1")
@@ -119,9 +119,9 @@ class CompanyApiTest {
     @Test
     void should_find_company_by_id() throws Exception {
         Company company = getCompany1();
-        companyJpaRepository.save(company);
+        companyRepository.save(company);
         Employee employee = getEmployee(company);
-        employeeJpaRepository.save(employee);
+        employeeRepository.save(employee);
 
         mockMvc.perform(get("/companies/{id}", company.getId()))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -138,11 +138,11 @@ class CompanyApiTest {
     @Test
     void should_find_employees_by_companies() throws Exception {
         Company company = getCompany1();
-        companyJpaRepository.save(company);
+        companyRepository.save(company);
         Employee employee = getEmployee(company);
-        employeeJpaRepository.save(employee);
+        employeeRepository.save(employee);
         Employee employee1 = getEmployee1(company);
-        employeeJpaRepository.save(employee1);
+        employeeRepository.save(employee1);
 
         mockMvc.perform(get("/companies/{companyId}/employees", company.getId()))
                 .andExpect(MockMvcResultMatchers.status().is(200))
