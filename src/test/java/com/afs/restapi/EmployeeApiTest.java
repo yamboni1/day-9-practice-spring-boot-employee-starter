@@ -119,12 +119,12 @@ class EmployeeApiTest {
     @Test
     void should_find_employee_by_gender() throws Exception {
         Employee employee = getEmployeeBob();
-        inMemoryEmployeeRepository.insert(employee);
+        employeeJpaRepository.save(employee);
 
         mockMvc.perform(get("/employees?gender={0}", "Male"))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(employee.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(employee.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(employee.getAge()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value(employee.getGender()))
@@ -133,24 +133,21 @@ class EmployeeApiTest {
 
     @Test
     void should_find_employees_by_page() throws Exception {
-        Employee employeeZhangsan = getEmployeeBob();
-        Employee employeeSusan = getEmployeeSusan();
-        Employee employeeLisi = getEmployeeLily();
-        inMemoryEmployeeRepository.insert(employeeZhangsan);
-        inMemoryEmployeeRepository.insert(employeeSusan);
-        inMemoryEmployeeRepository.insert(employeeLisi);
+        Employee employeeBob = employeeJpaRepository.save(getEmployeeBob());
+        Employee employeeSusan = employeeJpaRepository.save(getEmployeeSusan());
+        employeeJpaRepository.save(getEmployeeLily());
 
         mockMvc.perform(get("/employees")
                         .param("pageNumber", "1")
                         .param("pageSize", "2"))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(employeeZhangsan.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(employeeZhangsan.getAge()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value(employeeZhangsan.getGender()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].salary").value(employeeZhangsan.getSalary()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(2L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(employeeBob.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(employeeBob.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(employeeBob.getAge()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value(employeeBob.getGender()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].salary").value(employeeBob.getSalary()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(employeeSusan.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value(employeeSusan.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].age").value(employeeSusan.getAge()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].gender").value(employeeSusan.getGender()))

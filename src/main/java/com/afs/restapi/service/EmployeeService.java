@@ -48,7 +48,7 @@ public class EmployeeService {
     }
 
     public List<Employee> findByPage(Integer pageNumber, Integer pageSize) {
-        return employeeJpaRepository.findAll(PageRequest.of(pageNumber,pageSize)).toList();
+        return employeeJpaRepository.findAll(PageRequest.of(pageNumber-1,pageSize)).toList();
     }
 
     public void delete(Long id) {
