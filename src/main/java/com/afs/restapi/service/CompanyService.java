@@ -2,23 +2,28 @@ package com.afs.restapi.service;
 
 import com.afs.restapi.entity.Company;
 import com.afs.restapi.exception.CompanyNotFoundException;
+import com.afs.restapi.repository.CompanyJpaRepository;
+import com.afs.restapi.repository.EmployeeJpaRepository;
 import com.afs.restapi.repository.InMemoryCompanyRepository;
 import com.afs.restapi.entity.Employee;
 import com.afs.restapi.repository.InMemoryEmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CompanyService {
 
     private final InMemoryCompanyRepository inMemoryCompanyRepository;
     private final InMemoryEmployeeRepository inMemoryEmployeeRepository;
+    private final CompanyJpaRepository companyJpaRepository;
+    private final EmployeeJpaRepository employeeJpaRepository;
 
-    public CompanyService(InMemoryCompanyRepository inMemoryCompanyRepository, InMemoryEmployeeRepository inMemoryEmployeeRepository) {
+    public CompanyService(InMemoryCompanyRepository inMemoryCompanyRepository, InMemoryEmployeeRepository inMemoryEmployeeRepository, CompanyJpaRepository companyJpaRepository, EmployeeJpaRepository employeeJpaRepository) {
         this.inMemoryCompanyRepository = inMemoryCompanyRepository;
         this.inMemoryEmployeeRepository = inMemoryEmployeeRepository;
+        this.companyJpaRepository = companyJpaRepository;
+        this.employeeJpaRepository = employeeJpaRepository;
     }
 
     public InMemoryCompanyRepository getCompanyRepository() {
