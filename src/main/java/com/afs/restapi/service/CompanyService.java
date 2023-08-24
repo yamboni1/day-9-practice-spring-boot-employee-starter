@@ -35,7 +35,7 @@ public class CompanyService {
     }
 
     public List<Company> findAll() {
-        return getCompanyRepository().getCompanies();
+        return companyJpaRepository.findAll();
     }
 
     public List<Company> findByPage(Integer pageNumber, Integer pageSize) {

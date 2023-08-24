@@ -27,9 +27,6 @@ class EmployeeApiTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private InMemoryEmployeeRepository inMemoryEmployeeRepository;
-
-    @Autowired
     private EmployeeJpaRepository employeeJpaRepository;
 
     @BeforeEach
@@ -113,7 +110,7 @@ class EmployeeApiTest {
         mockMvc.perform(delete("/employees/{id}", employee.getId()))
                 .andExpect(MockMvcResultMatchers.status().is(204));
 
-        assertTrue(inMemoryEmployeeRepository.findById(employee.getId()).isEmpty());
+        assertTrue(employeeJpaRepository.findById(employee.getId()).isEmpty());
     }
 
     @Test
